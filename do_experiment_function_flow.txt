@@ -1,0 +1,26 @@
+do_experiment flow:
+
+1. check_and_create_lists
+	a. create_lists
+	   return word_lists_dict
+		i. add_words
+                   adds to word_lists_dict
+
+2. setup_experiment
+   return window
+
+3. setup_dm
+
+
+4. prepare_for_recall
+
+
+5. close_exp_window
+
+
+6. analysis
+   return result_dict
+	contains pstart, pstay, pstop
+   prints Avg recall transitions
+   prints Avg negative thought train length
+   
