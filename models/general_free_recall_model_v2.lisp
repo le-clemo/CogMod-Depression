@@ -16,7 +16,7 @@
 (define-model freerecall
 
 (sgp 
-   :rt -2 ; retrieval threshold
+   :rt -1.2 ; retrieval threshold
    :v t ; enable/disable trace
    :trace-detail low ; set level of trace detail
    :act nil ;t/medium/low/nil ;;tracing activation values
@@ -667,7 +667,7 @@
     - fourth       nil
 )
 
-#| (p retrieve-first-default
+(p retrieve-first-default
 	=goal>
 	  isa         recall
       state       retrieve
@@ -715,7 +715,7 @@
       position    nil
 )
 
- |#
+
 (p recall-first
    =goal>
       isa         recall
@@ -831,39 +831,39 @@
 ; :u ;; utility of prodiction
 ; :at ;; action time of production 
 
-#| (spp high-first :at 0.2) ; from firing high-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
-(spp high-second :at 0.2)
-(spp high-third :at 0.2)
-(spp high-fourth :at 0.2)
+(spp high-first :at 0.3) ; from firing high-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
+(spp high-second :at 0.3)
+(spp high-third :at 0.3)
+(spp high-fourth :at 0.3)
 
 (spp replace-first :at 0.3) ; from firing replace-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
 (spp replace-second :at 0.3)
 (spp replace-third :at 0.3)
-(spp replace-fourth :at 0.3) |#
+(spp replace-fourth :at 0.3)
 
 (spp rehearse-it :u 5); :at 0.3) 
 (spp attend-new-word :u 100) ; ensure new words are always attended
 
-#| (spp rehearse-first :u 1)
-(spp rehearse-second :u 1)
-(spp rehearse-third :u 1)
-(spp rehearse-fourth :u 1) |#
-#| (spp rehearse-first-default :u 0.0) ; to make it very unlikely the model defaults on rehearsing first item in WM
-(spp rehearse-second-default :u 0.0) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
-(spp rehearse-third-default :u 0.0)
-(spp rehearse-fourth-default :u 0.0)  |#; but likelihood to default on any of them should be pretty low
+(spp rehearse-first :u 1 :at 0.4)
+(spp rehearse-second :u 1 :at 0.4)
+(spp rehearse-third :u 1 :at 0.4)
+(spp rehearse-fourth :u 1 :at 0.4)
+(spp rehearse-first-default :u 0.9) ; to make it very unlikely the model defaults on rehearsing first item in WM
+(spp rehearse-second-default :u 0.9) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
+(spp rehearse-third-default :u 0.9)
+(spp rehearse-fourth-default :u 0.9) ; but likelihood to default on any of them should be pretty low
 
 ;utility noise (:egs) is set to 0.1
 (spp retrieve-first :u 1)
 (spp retrieve-second :u 1)
 (spp retrieve-third :u 1)
 (spp retrieve-fourth :u 1)
-(spp retrieve-first-default :u 0) ; to make it very unlikely the model defaults on recalling first item in WM
-(spp retrieve-second-default :u 0) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
-(spp retrieve-third-default :u 0)
-(spp retrieve-fourth-default :u 0) ; but likelihood to default on any of them should be pretty low
+(spp retrieve-first-default :u 0.7) ; to make it very unlikely the model defaults on recalling first item in WM
+(spp retrieve-second-default :u 0.7) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
+(spp retrieve-third-default :u 0.7)
+(spp retrieve-fourth-default :u 0.7) ; but likelihood to default on any of them should be pretty low
 
-(spp retrieve-a-word :u 2)
-(spp stop-recall :u .05)
+(spp retrieve-a-word :u 10)
+(spp stop-recall :u 0)
 )
 
