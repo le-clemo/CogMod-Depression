@@ -16,13 +16,13 @@
 (define-model freerecall
 
 (sgp 
-   :rt -1.2 ; retrieval threshold
+   :rt -1 ; retrieval threshold
    :v t ; enable/disable trace
    :trace-detail low ; set level of trace detail
    :act nil ;t/medium/low/nil ;;tracing activation values
    :show-focus t ; show location of visual focus
    :er t ; Makes it so ties in productions are determined randomly (nil = fixed order)
-   :bll .5 ; Set base-level learning, more frequently/recently retrieved items gain higher activation
+   :bll .6 ; Set base-level learning (decay parameter), more frequently/recently retrieved items gain higher activation
    :esc t ; use subsymbolic processing
    :auto-attend t ; visual location requests are automatically accompanied by a request to move attention to the location found
    :declarative-num-finsts 20 ; number of items that are kept as recently retrieved 
@@ -32,6 +32,8 @@
    :dat 0.05 ; set to its default value (0.05)
    :ol nil ; use base-level equation that requires complete history of a chunk (instead of formula that uses an approximation)
    :model-warnings nil 
+   :overstuff-visual-location t
+   #| :scene-change-threshold 0 |#
 )
   
 (chunk-type study-words state first valence1 second valence2 third valence3 fourth valence4 position)
@@ -491,24 +493,62 @@
    !eval! ("rehearsed-word" =word)            
 )
 
-#| 
-(p skip-rehearse 
-   =goal>
-      state     subgoal1
-      target      =word
-      position    =pos
-   =retrieval>
-      isa         memory
-      word        =word
-   ?imaginal>
-      state       free
+(P forget-word-1
+	=goal>
+	   state 	  subgoal1
+	   position   second
+	?retrieval>
+	   state 	  error
 ==>
-   =goal>
-      isa         study-words
-      state       rehearse
-      position    =pos     
+	=goal>
+	   isa 		  study-words
+	   state   	  rehearse
+	   first 	  nil
+	   position   second
 )
- |#
+
+(P forget-word-2
+	=goal>
+	   state 	  subgoal1
+	   position   third
+	?retrieval>
+	   state 	  error
+==>
+	=goal>
+	   isa 		  study-words
+	   state   	  rehearse
+	   second 	  nil
+	   position   third
+)
+
+(P forget-word-3
+	=goal>
+	   state 	  subgoal1
+	   position   fourth
+	?retrieval>
+	   state 	  error
+==>
+	=goal>
+	   isa 		  study-words
+	   state   	  rehearse
+	   third 	  nil
+	   position   fourth
+)
+
+(P forget-word-4
+	=goal>
+	   state 	  subgoal1
+	   position   first
+	?retrieval>
+	   state 	  error
+==>
+	=goal>
+	   isa 		  study-words
+	   state   	  rehearse
+	   fourth 	  nil
+	   position   first
+)
+
 
 (P attend-new-word
    =goal>
@@ -525,64 +565,26 @@
       state       attend  
 )
 
-#| (P skip-first
+#| (P no-new-word
    =goal>
       isa         study-words
-      state       rehearse
-      first       nil
-      position    first 
-==>
-   =goal>
-      isa         study-words
-      state       rehearse
-      position    second
-)
-
-(P skip-second
-   =goal>
-      isa         study-words
-      state       rehearse
-      second      nil
-      position    second        
-==>
-   =goal>
-      isa         study-words
-      state       rehearse
-      position    third
-)
-
-(P skip-third
-   =goal>
-      isa         study-words
-      state       rehearse
-      third       nil
-      position    third        
-==>
-   =goal>
-      isa         study-words
-      state       rehearse
-      position    fourth
-)
-
-(P skip-fourth
-   =goal>
-      isa         study-words
-      state       rehearse
-      fourth      nil
-      position    fourth          
-==>
-   =goal>
-      isa         study-words
-      state       rehearse
-      position    first
+      state       find-location
+      position 	  =pos
+ ==>
+ 	=goal>
+ 	  isa 		  study-words
+ 	  state 	  rehearse
+ 	  position 	  =pos
 ) |#
 
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;; #| Recall Starts Below |# ;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;;;;;;;;;;;;;;;;; #| Recall Starts Below |# ;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;; #| Recall Starts Below |# ;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;; #| Recall Starts Below |# ;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 
 (p start-recall
    =goal>
@@ -667,7 +669,7 @@
     - fourth       nil
 )
 
-(p retrieve-first-default
+#| (p retrieve-first-default
 	=goal>
 	  isa         recall
       state       retrieve
@@ -713,6 +715,67 @@
       isa         recall
       state       retrieve
       position    nil
+) |#
+
+
+(P retrieval-failure-1
+   =goal>
+      isa         recall
+      state       harvest 
+      position    first
+   ?retrieval>
+      state 	  error
+==>
+   =goal>
+   	  isa 		  recall
+   	  state 	  retrieve
+   	  position    second
+   -retrieval>
+)
+
+(P retrieval-failure-2
+   =goal>
+      isa         recall
+      state       harvest 
+      position    second
+   ?retrieval>
+      state 	  error
+==>
+   =goal>
+   	  isa 		  recall
+   	  state 	  retrieve
+   	  position    third
+   -retrieval>
+)
+
+(P retrieval-failure-3
+   =goal>
+      isa         recall
+      state       harvest 
+      position    third
+   ?retrieval>
+      state 	  error
+==>
+   =goal>
+   	  isa 		  recall
+   	  state 	  retrieve
+   	  position    fourth
+   -retrieval>
+)
+
+(P retrieval-failure-4
+   =goal>
+      isa         recall
+      state       harvest 
+      position    fourth
+   ?retrieval>
+      state 	  error
+==>
+   =goal>
+   	  isa 		  recall
+   	  state 	  retrieve
+   	  position    nil
+   -retrieval>
 )
 
 
@@ -784,6 +847,8 @@
    !output! (=word)
 )
 
+
+
 (p retrieve-a-word
    =goal>
       isa         recall
@@ -841,27 +906,33 @@
 (spp replace-third :at 0.3)
 (spp replace-fourth :at 0.3)
 
-(spp rehearse-it :u 5); :at 0.3) 
-(spp attend-new-word :u 100) ; ensure new words are always attended
+(spp rehearse-it :u 5); :at 0.4) 
+(spp attend-new-word :u 1000) ; ensure new words are always attended
+#| (spp no-new-word :u 0 :at 0.01) |#
 
 (spp rehearse-first :u 1 :at 0.4)
 (spp rehearse-second :u 1 :at 0.4)
 (spp rehearse-third :u 1 :at 0.4)
 (spp rehearse-fourth :u 1 :at 0.4)
-(spp rehearse-first-default :u 0.9) ; to make it very unlikely the model defaults on rehearsing first item in WM
-(spp rehearse-second-default :u 0.9) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
-(spp rehearse-third-default :u 0.9)
-(spp rehearse-fourth-default :u 0.9) ; but likelihood to default on any of them should be pretty low
+(spp rehearse-first-default :u 0.8) ; to make it very unlikely the model defaults on rehearsing first item in WM
+(spp rehearse-second-default :u 0.8) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
+(spp rehearse-third-default :u 0.8)
+(spp rehearse-fourth-default :u 0.8) ; but likelihood to default on any of them should be pretty low
 
 ;utility noise (:egs) is set to 0.1
 (spp retrieve-first :u 1)
 (spp retrieve-second :u 1)
 (spp retrieve-third :u 1)
 (spp retrieve-fourth :u 1)
-(spp retrieve-first-default :u 0.7) ; to make it very unlikely the model defaults on recalling first item in WM
-(spp retrieve-second-default :u 0.7) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
-(spp retrieve-third-default :u 0.7)
-(spp retrieve-fourth-default :u 0.7) ; but likelihood to default on any of them should be pretty low
+(spp retrieve-first-default :u 0.6) ; to make it very unlikely the model defaults on recalling first item in WM
+(spp retrieve-second-default :u 0.6) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
+(spp retrieve-third-default :u 0.6)
+(spp retrieve-fourth-default :u 0.6) ; but likelihood to default on any of them should be pretty low
+
+(spp retrieval-failure-1 :at 0.01)
+(spp retrieval-failure-2 :at 0.01)
+(spp retrieval-failure-3 :at 0.01)
+(spp retrieval-failure-4 :at 0.01)
 
 (spp retrieve-a-word :u 10)
 (spp stop-recall :u 0)
