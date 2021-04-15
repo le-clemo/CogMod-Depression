@@ -16,13 +16,13 @@
 (define-model freerecall
 
 (sgp 
-   :rt -1 ; retrieval threshold
+   :rt 0 ; retrieval threshold
    :v t ; enable/disable trace
    :trace-detail low ; set level of trace detail
    :act nil ;t/medium/low/nil ;;tracing activation values
    :show-focus t ; show location of visual focus
    :er t ; Makes it so ties in productions are determined randomly (nil = fixed order)
-   :bll .6 ; Set base-level learning (decay parameter), more frequently/recently retrieved items gain higher activation
+   :bll 0.7 ; Set base-level learning (decay parameter), more frequently/recently retrieved items gain higher activation
    :esc t ; use subsymbolic processing
    :auto-attend t ; visual location requests are automatically accompanied by a request to move attention to the location found
    :declarative-num-finsts 20 ; number of items that are kept as recently retrieved 
@@ -33,6 +33,7 @@
    :ol nil ; use base-level equation that requires complete history of a chunk (instead of formula that uses an approximation)
    :model-warnings nil 
    :overstuff-visual-location t
+   :visual-onset-span 3 ;visual scene change can be noticed up to x seconds after it appeared
    #| :scene-change-threshold 0 |#
 )
   
@@ -896,24 +897,24 @@
 ; :u ;; utility of prodiction
 ; :at ;; action time of production 
 
-(spp high-first :at 0.3) ; from firing high-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
-(spp high-second :at 0.3)
-(spp high-third :at 0.3)
-(spp high-fourth :at 0.3)
+#| (spp high-first :at 0.2) ; from firing high-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
+(spp high-second :at 0.2)
+(spp high-third :at 0.2)
+(spp high-fourth :at 0.2)
 
-(spp replace-first :at 0.3) ; from firing replace-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
-(spp replace-second :at 0.3)
-(spp replace-third :at 0.3)
-(spp replace-fourth :at 0.3)
+(spp replace-first :at 0.2) ; from firing replace-n to the end of add-to-memory-n it now takes the value set here for :at + 0.1 sec
+(spp replace-second :at 0.2)
+(spp replace-third :at 0.2)
+(spp replace-fourth :at 0.2) |#
 
 (spp rehearse-it :u 5); :at 0.4) 
 (spp attend-new-word :u 1000) ; ensure new words are always attended
 #| (spp no-new-word :u 0 :at 0.01) |#
 
-(spp rehearse-first :u 1 :at 0.4)
-(spp rehearse-second :u 1 :at 0.4)
-(spp rehearse-third :u 1 :at 0.4)
-(spp rehearse-fourth :u 1 :at 0.4)
+(spp rehearse-first :u 1); :at 0.3)
+(spp rehearse-second :u 1); :at 0.3)
+(spp rehearse-third :u 1); :at 0.3)
+(spp rehearse-fourth :u 1); :at 0.3)
 (spp rehearse-first-default :u 0.8) ; to make it very unlikely the model defaults on rehearsing first item in WM
 (spp rehearse-second-default :u 0.8) ; slightly more likely for each subsequent position (because time passes and model is occupied with recalling previous items)
 (spp rehearse-third-default :u 0.8)
