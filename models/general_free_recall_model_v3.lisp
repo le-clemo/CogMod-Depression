@@ -67,9 +67,6 @@
    (startrecall isa recall state beginrecall)   
 )
 
-(set-all-base-levels 
-   (memory 1000000 -10000))
-
 (P find-unattended-word
    =goal>
       isa         study-words
@@ -894,8 +891,6 @@
    !stop!
 )
 
-(goal-focus goal)
-
 
 ; :u ;; utility of prodiction
 ; :at ;; action time of production 
@@ -940,5 +935,10 @@
 
 (spp retrieve-a-word :u 10)
 (spp stop-recall :u 0)
+
+
+(set-all-base-levels 5000 -1000)
+(goal-focus goal)
+
 )
 
