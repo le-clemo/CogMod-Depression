@@ -33,7 +33,7 @@
    :ol nil ; use base-level equation that requires complete history of a chunk (instead of formula that uses an approximation)
    :model-warnings nil 
    #| :overstuff-visual-location t |#
-   :visual-onset-span 3 ;visual scene change can be noticed up to x seconds after it appeared
+   #| :visual-onset-span 3 |# ;visual scene change can be noticed up to x seconds after it appeared
    #| :scene-change-threshold 0 |#
 )
   
@@ -66,6 +66,9 @@
    (goal isa study-words state start)
    (startrecall isa recall state beginrecall)   
 )
+
+(set-all-base-levels 
+   (memory 1000000 -10000))
 
 (P find-unattended-word
    =goal>
