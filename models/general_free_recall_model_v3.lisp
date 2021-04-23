@@ -16,7 +16,7 @@
 (define-model freerecall
 
 (sgp 
-   :rt -1 ; retrieval threshold (default = 0)
+   :rt 0.2 ; retrieval threshold (default = 0)
    :v t ; enable/disable trace
    :trace-detail low ; set level of trace detail
    :act nil ;t/medium/low/nil ;;tracing activation values
@@ -32,7 +32,8 @@
    :dat 0.05 ; set to its default value (0.05)
    :ol nil ; use base-level equation that requires complete history of a chunk (instead of formula that uses an approximation)
    :model-warnings nil
-   :visual-onset-span 0.5 ;visual scene change can be noticed up to x seconds after it appeared (default = 0.5)
+   #| :visual-onset-span 0.5 ;visual scene change can be noticed up to x seconds after it appeared (default = 0.5) |#
+   :unstuff-visual-location nil
    #| :lf 0.8 |# ;as an alternative to visual-onset-span, try this (to reduce the time retrievals take) (default = 1)
    :mp 10
 #|    :md -1
@@ -411,8 +412,7 @@
    +retrieval>
       isa         memory
       word        =word  
-      valence     =val 
-    !output! (=word)  
+      valence     =val  
 )
 
 (P rehearse-second
@@ -433,7 +433,6 @@
       isa         memory   
       word        =word   
       valence     =val
-    !output! (=word) 
 )
 
 (P rehearse-third
@@ -454,7 +453,6 @@
       isa         memory   
       word        =word  
       valence     =val
-    !output! (=word)
 )
 
 (P rehearse-fourth
@@ -475,7 +473,6 @@
       isa         memory   
       word        =word  
       valence     =val
-    !output! (=word)
 )
 
 
@@ -584,8 +581,8 @@
 	   state 	  subgoal1
 	   context 	  =context
 	   position   second
-	=retrieval>
-		state 	  free
+	?retrieval>
+		buffer 	  failure
 ==>
 	=goal>
 	   isa 		  study-words
@@ -600,8 +597,8 @@
 	   state 	  subgoal1
 	   context 	  =context
 	   position   third
-	=retrieval>
-		state 	  free
+	?retrieval>
+		buffer 	  failure
 ==>
 	=goal>
 	   isa 		  study-words
@@ -616,8 +613,8 @@
 	   state 	  subgoal1
 	   context 	  =context
 	   position   fourth
-	=retrieval>
-		state 	  free
+	?retrieval>
+		buffer 	  failure
 ==>
 	=goal>
 	   isa 		  study-words
@@ -632,8 +629,8 @@
 	   state 	  subgoal1
 	   context 	  =context
 	   position   first
-	=retrieval>
-		state 	  free
+	?retrieval>
+		buffer 	  failure
 ==>
 	=goal>
 	   isa 		  study-words
@@ -662,40 +659,6 @@
       context 	  =context 
     ;!output! (=context)
 )
-
-(P attend-new-word-2
-   =goal>
-      isa         study-words
-      state       subgoal1
-      context 	  =context
-      position 	  =pos
-   =visual-location>
-   ?visual>
-      state       free  
-==>
-#|    +visual>
-      cmd         move-attention
-      screen-pos  =visual-location |#
-   =goal>
-      state       attend
-      context 	  =context
-      position 	  =pos
-    ;!output! (=context)
-)
-
-#| (P no-new-word
-   =goal>
-      isa         study-words
-      state       find-location
-      position 	  =pos
- ==>
- 	=goal>
- 	  isa 		  study-words
- 	  state 	  rehearse
- 	  position 	  =pos
-) |#
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -1097,7 +1060,7 @@
 
 (spp attend-new-word-2 :u -10)
 
-(set-all-base-levels 500 -1000) ;settings in Anderson's Murdock model --> 500 -1000
+(set-all-base-levels 1000 -1000) ;settings in Anderson's Murdock model --> 500 -1000
 (goal-focus goal)
 
 )
