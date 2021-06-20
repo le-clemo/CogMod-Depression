@@ -1,0 +1,9 @@
+Current Issues:
+
+- Sometimes retrieval of a chunk takes very long. When this happens at the end of a rehearsal or recall phase it leads to issues in the subsequent phase. The model doesn't break down because of this because I implemented extra PR to handle these issues. It's not ideal though...
+
+- The model doesn't quite capture the dynamics found in Roberts (1972) - especially the apparent interactive effect of list length and presentation time on the number of words recalled.
+
+- Populating declarative memory from python is somewhat limiting because it's difficult (impossible?) to set different base levels for different chunks (in our case word chunks and rumination chunks). A solution would be to do this via model lisp file. In general, using the python version is somewhat limiting in my experience.
+
+- Rumination is more likely and more pronounced during the recall phase than the rehearsal phase.
